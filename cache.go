@@ -14,13 +14,17 @@ func NewCache() Cache {
 	return cache
 }
 
-func (c *Cache) Get(key string) (string, bool) {
+func (c *Cache) Clear() {
 	now := time.Now()
 	for key, _ := range c.deadlines {
 		if now.After(c.deadlines[key]) {
 			delete(c.store, key)
 		}
 	}
+}
+
+func (c *Cache) Get(key string) (string, bool) {
+	c.Clear()
 	result, ok := c.store[key]
 	return result, ok
 }
@@ -30,6 +34,7 @@ func (c *Cache) Put(key, value string) {
 }
 
 func (c *Cache) Keys() []string {
+	c.Clear()
 	keys := make([]string, len(c.store))
 	for key, _ := range c.store {
 		keys = append(keys, key)
