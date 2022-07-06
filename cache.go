@@ -37,7 +37,7 @@ func (c *Cache) Keys() []string {
 	c.Clear()
 	keys := make([]string, len(c.store))
 	for key, _ := range c.store {
-		keys = append(keys, key)
+		keys[0] = key
 	}
 	return keys
 }
