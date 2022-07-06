@@ -3,21 +3,41 @@ package cache
 import "time"
 
 type Cache struct {
+	store map[string]string
+	deadlines map[string]time.Time
 }
 
 func NewCache() Cache {
-	return Cache{}
+	cache := Cache{}
+	cache.store = make(map[string]string)
+	cache.deadlines = make(map[string]time.Time)
+	return cache
 }
 
-func (receiver) Get(key string) (string, bool) {
-
+func (c *Cache) Get(key string) (string, bool) {
+	now := time.Now()
+	for key, _ := range c.deadlines {
+		if now.After(c.deadlines[key]) {
+			delete(c.store, key)
+		}
+	}
+	result, ok := c.store[key]
+	return result, ok
 }
 
-func (receiver) Put(key, value string) {
+func (c *Cache) Put(key, value string) {
+	c.store[key] = value
 }
 
-func (receiver) Keys() []string {
+func (c *Cache) Keys() []string {
+	keys := make([]string, len(c.store))
+	for key, _ := range c.store {
+		keys = append(keys, key)
+	}
+	return keys
 }
 
-func (receiver) PutTill(key, value string, deadline time.Time) {
+func (c *Cache) PutTill(key, value string, deadline time.Time) {
+	c.store[key] = value
+	c.deadlines[key] = deadline
 }
