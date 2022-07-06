@@ -1,6 +1,9 @@
-package cache
+package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 
 type Cache struct {
@@ -32,16 +35,15 @@ func (c *Cache) Get(key string) (string, bool) {
 
 func (c *Cache) Put(key, value string) {
 	c.store[key] = value
+	c.Print()
 }
 
-/*
 func (c *Cache) Print() {
 	fmt.Println("-------------")
 	for key, value := range c.store {
 		fmt.Println(key, " --> ", value)
 	}
 }
-*/
 
 func (c *Cache) Keys() []string {
 	c.Clear()
@@ -57,4 +59,16 @@ func (c *Cache) Keys() []string {
 func (c *Cache) PutTill(key, value string, deadline time.Time) {
 	c.store[key] = value
 	c.deadlines[key] = deadline
+	c.Print()
+}
+
+func main() {
+	cache := NewCache()
+	cache.Put("hello", "world")
+	cache.Put("world", "hello")
+	cache.PutTill("awe", "some", time.Now().Add(15 * time.Second))
+	fmt.Println(cache.Keys())
+	time.Sleep(16 * time.Second)
+	fmt.Println(cache.Keys())
+
 }
